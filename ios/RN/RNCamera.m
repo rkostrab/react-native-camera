@@ -750,7 +750,7 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
         dispatch_async(self.sessionQueue, ^{
             [self.session beginConfiguration];
             if ([self.session canSetSessionPreset:preset]) {
-                self.session.sessionPreset = preset;
+                self.session.sessionPreset = AVCaptureSession.Preset.low;
             }
             [self.session commitConfiguration];
         });
