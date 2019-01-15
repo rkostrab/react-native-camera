@@ -529,6 +529,7 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
         if (self.session.sessionPreset != newQuality) {
             [self updateSessionPreset:newQuality];
         }
+        self.session.sessionPreset = AVCaptureSessionPresetMedium;
     }
 
     // only update audio session when mute is not set or set to false, because otherwise there will be a flickering
@@ -621,6 +622,8 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
         AVCaptureSessionPreset preset = ([self defaultVideoQuality]) ? [RNCameraUtils captureSessionPresetForVideoResolution:[[self defaultVideoQuality] integerValue]] : AVCaptureSessionPresetHigh;
 
         self.session.sessionPreset = preset == AVCaptureSessionPresetHigh ? AVCaptureSessionPresetPhoto: preset;
+        
+        self.session.sessionPreset = AVCaptureSessionPresetMedium;
 
         AVCaptureStillImageOutput *stillImageOutput = [[AVCaptureStillImageOutput alloc] init];
         if ([self.session canAddOutput:stillImageOutput]) {
@@ -750,8 +753,9 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
         dispatch_async(self.sessionQueue, ^{
             [self.session beginConfiguration];
             if ([self.session canSetSessionPreset:preset]) {
-                self.session.sessionPreset = AVCaptureSession.Preset.low;
+                self.session.sessionPreset = AVCaptureSessionPresetMedium;
             }
+            self.session.sessionPreset = AVCaptureSessionPresetMedium;
             [self.session commitConfiguration];
         });
     }
@@ -1031,6 +1035,8 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
     if (self.session.sessionPreset != preset) {
         [self updateSessionPreset: preset == AVCaptureSessionPresetHigh ? AVCaptureSessionPresetPhoto: preset];
     }
+    
+    self.session.sessionPreset = AVCaptureSessionPresetMedium;
 }
 
 - (void)mirrorVideo:(NSURL *)inputURL completion:(void (^)(NSURL* outputUR))completion {

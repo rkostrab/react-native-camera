@@ -79,11 +79,11 @@ class Camera1 extends CameraViewImpl implements MediaRecorder.OnInfoListener,
     private boolean mIsRecording;
 
     private final SizeMap mPreviewSizes = new SizeMap();
-                                                    
+
     private boolean mIsPreviewActive = false;
 
     private final SizeMap mPictureSizes = new SizeMap();
-                                                    
+
     private Size mPictureSize;
 
     private AspectRatio mAspectRatio;
@@ -197,7 +197,7 @@ class Camera1 extends CameraViewImpl implements MediaRecorder.OnInfoListener,
             mCamera.setPreviewCallback(this);
         }
     }
-                                                    
+
     @Override
     public void resumePreview() {
         startCameraPreview();
@@ -241,12 +241,12 @@ class Camera1 extends CameraViewImpl implements MediaRecorder.OnInfoListener,
         }
         return idealAspectRatios.ratios();
     }
-                                                    
+
     @Override
     SortedSet<Size> getAvailablePictureSizes(AspectRatio ratio) {
         return mPictureSizes.sizes(ratio);
     }
-    
+
     @Override
     void setPictureSize(Size size) {
         if (size == null) {
@@ -266,7 +266,7 @@ class Camera1 extends CameraViewImpl implements MediaRecorder.OnInfoListener,
             mCamera.setParameters(mCameraParameters);
         }
     }
-    
+
     @Override
     Size getPictureSize() {
         return mPictureSize;
@@ -860,6 +860,9 @@ class Camera1 extends CameraViewImpl implements MediaRecorder.OnInfoListener,
         }
 
         mMediaRecorder.setOrientationHint(calcCameraRotation(mOrientation != Constants.ORIENTATION_AUTO ? orientationEnumToRotation(mOrientation) : mDeviceOrientation));
+
+        mMediaRecorder.setVideoEncodingBitRate(300000);
+        mMediaRecorder.setVideoFrameRate(25);
 
         if (maxDuration != -1) {
             mMediaRecorder.setMaxDuration(maxDuration);
