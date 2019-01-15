@@ -1100,9 +1100,6 @@ class Camera2 extends CameraViewImpl implements MediaRecorder.OnInfoListener, Me
             setCamcorderProfile(CamcorderProfile.get(CamcorderProfile.QUALITY_HIGH), recordAudio);
         }
 
-        mMediaRecorder.setVideoEncodingBitRate(300000);
-        mMediaRecorder.setVideoFrameRate(25);
-
         mMediaRecorder.setOrientationHint(getOutputRotation());
 
         if (maxDuration != -1) {
@@ -1118,9 +1115,9 @@ class Camera2 extends CameraViewImpl implements MediaRecorder.OnInfoListener, Me
 
     private void setCamcorderProfile(CamcorderProfile profile, boolean recordAudio) {
         mMediaRecorder.setOutputFormat(profile.fileFormat);
-        mMediaRecorder.setVideoFrameRate(profile.videoFrameRate);
+        mMediaRecorder.setVideoFrameRate(30);
         mMediaRecorder.setVideoSize(profile.videoFrameWidth, profile.videoFrameHeight);
-        mMediaRecorder.setVideoEncodingBitRate(profile.videoBitRate);
+        mMediaRecorder.setVideoEncodingBitRate(1000000);
         mMediaRecorder.setVideoEncoder(profile.videoCodec);
         if (recordAudio) {
             mMediaRecorder.setAudioEncodingBitRate(profile.audioBitRate);

@@ -861,9 +861,6 @@ class Camera1 extends CameraViewImpl implements MediaRecorder.OnInfoListener,
 
         mMediaRecorder.setOrientationHint(calcCameraRotation(mOrientation != Constants.ORIENTATION_AUTO ? orientationEnumToRotation(mOrientation) : mDeviceOrientation));
 
-        mMediaRecorder.setVideoEncodingBitRate(300000);
-        mMediaRecorder.setVideoFrameRate(25);
-
         if (maxDuration != -1) {
             mMediaRecorder.setMaxDuration(maxDuration);
         }
@@ -900,9 +897,9 @@ class Camera1 extends CameraViewImpl implements MediaRecorder.OnInfoListener,
 
     private void setCamcorderProfile(CamcorderProfile profile, boolean recordAudio) {
         mMediaRecorder.setOutputFormat(profile.fileFormat);
-        mMediaRecorder.setVideoFrameRate(profile.videoFrameRate);
+        mMediaRecorder.setVideoFrameRate(30);
         mMediaRecorder.setVideoSize(profile.videoFrameWidth, profile.videoFrameHeight);
-        mMediaRecorder.setVideoEncodingBitRate(profile.videoBitRate);
+        mMediaRecorder.setVideoEncodingBitRate(1000000);
         mMediaRecorder.setVideoEncoder(profile.videoCodec);
         if (recordAudio) {
             mMediaRecorder.setAudioEncodingBitRate(profile.audioBitRate);
