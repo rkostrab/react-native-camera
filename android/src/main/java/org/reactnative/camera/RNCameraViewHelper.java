@@ -7,19 +7,15 @@ import android.graphics.Paint;
 import android.media.CamcorderProfile;
 import android.os.Build;
 import android.support.media.ExifInterface;
-import android.util.SparseArray;
 import android.view.ViewGroup;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.google.android.cameraview.CameraView;
-import com.google.android.gms.vision.barcode.Barcode;
-import com.google.android.gms.vision.face.Face;
-import com.google.android.gms.vision.text.TextBlock;
 import com.google.zxing.Result;
 import org.reactnative.camera.events.*;
-import org.reactnative.camera.utils.ImageDimensions;
 import org.reactnative.barcodedetector.RNBarcodeDetector;
 import org.reactnative.facedetector.RNFaceDetector;
 
@@ -193,24 +189,8 @@ public class RNCameraViewHelper {
 
   // Face detection events
 
-  public static void emitFacesDetectedEvent(
-      ViewGroup view,
-      SparseArray<Face> faces,
-      ImageDimensions dimensions
-  ) {
-    float density = view.getResources().getDisplayMetrics().density;
-
-    double scaleX = (double) view.getWidth() / (dimensions.getWidth() * density);
-    double scaleY = (double) view.getHeight() / (dimensions.getHeight() * density);
-
-    FacesDetectedEvent event = FacesDetectedEvent.obtain(
-        view.getId(),
-        faces,
-        dimensions,
-        scaleX,
-        scaleY
-    );
-
+  public static void emitFacesDetectedEvent(ViewGroup view, WritableArray data) {
+    FacesDetectedEvent event = FacesDetectedEvent.obtain(view.getId(), data);
     ReactContext reactContext = (ReactContext) view.getContext();
     reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher().dispatchEvent(event);
   }
@@ -223,15 +203,8 @@ public class RNCameraViewHelper {
 
   // Barcode detection events
 
-  public static void emitBarcodesDetectedEvent(
-      ViewGroup view,
-      SparseArray<Barcode> barcodes
-  ) {
-    BarcodesDetectedEvent event = BarcodesDetectedEvent.obtain(
-        view.getId(),
-        barcodes
-    );
-
+  public static void emitBarcodesDetectedEvent(ViewGroup view, WritableArray barcodes) {
+    BarcodesDetectedEvent event = BarcodesDetectedEvent.obtain(view.getId(), barcodes);
     ReactContext reactContext = (ReactContext) view.getContext();
     reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher().dispatchEvent(event);
   }
@@ -252,35 +225,26 @@ public class RNCameraViewHelper {
 
   // Text recognition event
 
-  public static void emitTextRecognizedEvent(
-      ViewGroup view,
-      SparseArray<TextBlock> textBlocks,
-      ImageDimensions dimensions) {
-    float density = view.getResources().getDisplayMetrics().density;
-
-    double scaleX = (double) view.getWidth() / (dimensions.getWidth() * density);
-    double scaleY = (double) view.getHeight() / (dimensions.getHeight() * density);
-
-    TextRecognizedEvent event = TextRecognizedEvent.obtain(
-        view.getId(),
-        textBlocks,
-        dimensions,
-        scaleX,
-        scaleY
-    );
-
+  public static void emitTextRecognizedEvent(ViewGroup view, WritableArray data) {
+    TextRecognizedEvent event = TextRecognizedEvent.obtain(view.getId(), data);
     ReactContext reactContext = (ReactContext) view.getContext();
     reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher().dispatchEvent(event);
   }
 
   // Utilities
 
-  public static int getCorrectCameraRotation(int rotation, int facing) {
+  public static int getCorrectCameraRotation(int rotation, int facing, int cameraOrientation) {
     if (facing == CameraView.FACING_FRONT) {
-      return (rotation - 90 + 360) % 360;
+      return (360 - (cameraOrientation + rotation) % 360) % 360;
     } else {
-      return (-rotation + 90 + 360) % 360;
+      final int landscapeFlip = rotationIsLandscape(rotation) ? 180 : 0;
+      return (cameraOrientation - rotation + landscapeFlip) % 360;
     }
+  }
+
+  private static boolean rotationIsLandscape(int rotation) {
+    return (rotation == Constants.LANDSCAPE_90 ||
+            rotation == Constants.LANDSCAPE_270);
   }
 
   private static int getCamcorderProfileQualityFromCameraModuleConstant(int quality) {
@@ -300,7 +264,7 @@ public class RNCameraViewHelper {
     }
     return CamcorderProfile.QUALITY_HIGH;
   }
-  
+
   public static CamcorderProfile getCamcorderProfile(int quality) {
     CamcorderProfile profile = CamcorderProfile.get(CamcorderProfile.QUALITY_HIGH);
     int camcorderQuality = getCamcorderProfileQualityFromCameraModuleConstant(quality);
