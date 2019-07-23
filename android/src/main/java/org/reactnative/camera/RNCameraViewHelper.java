@@ -10,6 +10,7 @@ import android.support.media.ExifInterface;
 import android.view.ViewGroup;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.bridge.ReadableMapKeySetIterator;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.uimanager.UIManagerModule;
@@ -235,7 +236,8 @@ public class RNCameraViewHelper {
 
   public static int getCorrectCameraRotation(int rotation, int facing, int cameraOrientation) {
     if (facing == CameraView.FACING_FRONT) {
-      return (360 - (cameraOrientation + rotation) % 360) % 360;
+      // Tested the below line and there's no need to do the mirror calculation
+      return (cameraOrientation + rotation) % 360;
     } else {
       final int landscapeFlip = rotationIsLandscape(rotation) ? 180 : 0;
       return (cameraOrientation - rotation + landscapeFlip) % 360;
@@ -305,6 +307,27 @@ public class RNCameraViewHelper {
     }
 
     return exifMap;
+  }
+
+  public static void setExifData(ExifInterface exifInterface, WritableMap exifMap) {
+    ReadableMapKeySetIterator iterator = exifMap.keySetIterator();
+    while (iterator.hasNextKey()) {
+      String key = iterator.nextKey();
+      switch (exifMap.getType(key)) {
+        case Null:
+          exifInterface.setAttribute(key, null);
+          break;
+        case Boolean:
+          exifInterface.setAttribute(key, Boolean.toString(exifMap.getBoolean(key)));
+          break;
+        case Number:
+          exifInterface.setAttribute(key, Double.toString(exifMap.getDouble(key)));
+          break;
+        case String:
+          exifInterface.setAttribute(key, exifMap.getString(key));
+          break;
+      }
+    }
   }
 
   public static Bitmap generateSimulatorPhoto(int width, int height) {

@@ -2,7 +2,7 @@
 import React from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, Slider } from 'react-native';
 // eslint-disable-next-line import/no-unresolved
-import { FaceDetector, RNCamera } from 'react-native-camera';
+import { RNCamera } from 'react-native-camera';
 
 const flashModeOrder = {
   off: 'on',
@@ -252,8 +252,12 @@ export default class CameraScreen extends React.Component {
         ratio={this.state.ratio}
         focusDepth={this.state.depth}
         trackingEnabled
-        permissionDialogTitle={'Permission to use camera'}
-        permissionDialogMessage={'We need your permission to use your camera phone'}
+        androidCameraPermissionOptions={{
+          title: 'Permission to use camera',
+          message: 'We need your permission to use your camera',
+          buttonPositive: 'Ok',
+          buttonNegative: 'Cancel',
+        }}
         faceDetectionLandmarks={
           RNCamera.Constants.FaceDetection.Landmarks
             ? RNCamera.Constants.FaceDetection.Landmarks.all
@@ -267,6 +271,7 @@ export default class CameraScreen extends React.Component {
         onFacesDetected={canDetectFaces ? this.facesDetected : null}
         onTextRecognized={canDetectText ? this.textRecognized : null}
         onGoogleVisionBarcodesDetected={canDetectBarcode ? this.barcodeRecognized : null}
+        googleVisionBarcodeType={RNCamera.Constants.GoogleVisionBarcodeDetection.BarcodeType.ALL}
       >
         <View
           style={{
